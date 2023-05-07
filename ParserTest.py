@@ -1,4 +1,5 @@
 import telebot
+import re
 import requests
 from bs4 import BeautifulSoup
 import urllib.request
@@ -7,7 +8,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 import json
-bot = telebot.TeleBot(os.getenv("token"))
+#bot = telebot.TeleBot(os.getenv("token"))
 def steam_parse():
     html = requests.get("https://steamcommunity.com/app/218620/discussions/?l=russian").text
     soup = BeautifulSoup(html, 'html.parser') 
@@ -15,12 +16,32 @@ def steam_parse():
     posts = []
     for post in divs:
         url = post.find("a", class_ = "forum_topic_overlay").get("href")
-        name = post.find("div", class_ = "forum_topic_name").text.strip() 
-        posts.append((name, url))
+        forum_topic_name = post.find("div", class_ = "forum_topic_name")
+        span_text=forum_topic_name.find('span')
+        if span_text:
+            name="ЗАКРЕПЛЕНО "+span_text.next_sibling.strip()
+        else:
+            name=forum_topic_name.text.strip()
+        author = post.find("div", class_ = "forum_topic_op").text.strip()
+        reply_count = post.find("div", class_ = "forum_topic_reply_count").text.strip()
+        lastpost = post.find("div", class_ = "forum_topic_lastpost").get("title")
+        posts.append((name, url,author,reply_count,lastpost))
     return posts
+a = 'Jacket'
+b = steam_parse()
+#def sort(a,b):
+results = []
+for i in b:
+    pattern =re.compile(a)
+    line = i[0]
+    c=bool(pattern.search(line))
+    if c == True:
+        results.append(i)
+print(results)
 
 
-print(steam_parse())
+    
+#print(steam_parse())
 
 """
 a=requests.get('https://steamcommunity.com/app/218620/discussions/').text
@@ -33,4 +54,4 @@ with urllib.request.urlopen(req) as response:
     the_page = response.read()
 print(the_page)
 """
-bot.infinity_polling()
+#bot.infinity_polling()
