@@ -9,10 +9,14 @@ import os
 load_dotenv()
 import json
 #bot = telebot.TeleBot(os.getenv("token"))
-def steam_parse():
-    html = requests.get("https://steamcommunity.com/app/218620/discussions/?l=russian&p=1").text
+game_id = 218620
+page = 1
+n=3
+def disc_parser(game_id,page):
+    html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text
     soup = BeautifulSoup(html, 'html.parser') 
     divs = soup.find_all("div", class_ = 'forum_topic')
+
     posts = []
     for post in divs:
         url = post.find("a", class_ = "forum_topic_overlay").get("href")
@@ -40,8 +44,8 @@ def diss_sort_test():
             results.append(i)
     print(results)
 
-def guides_parser():
-    html=requests.get("https://steamcommunity.com/app/218620/guides/?searchText=&browsefilter=trend&browsesort=creationorder&requiredtags%5B0%5D=-1&p=1").text
+def guides_parser(game_id,page):
+    html=requests.get(f"https://steamcommunity.com/app/{game_id}/guides/?searchText=&browsefilter=trend&browsesort=creationorder&requiredtags%5B0%5D=-1&p={page}").text
     soup = BeautifulSoup(html, 'html.parser')
     find= soup.find_all("a", class_ = "workshopItemCollection ugc_show_warning_image ugc")
     
@@ -56,7 +60,27 @@ def guides_parser():
     
     return guides
 
-print(guides_parser())
+def disc_page_turner(n):
+    #одна страница = 15 обсуждений
+    e=[]
+    for i in range (1,n+1):
+        e+=disc_parser(game_id,i)
+    return e
+
+def guides_page_turner(n):
+    #одна страница = 30 гайдов
+    e=[]
+    for i in range (1,n+1):
+        e+=guides_parser(game_id,i)
+    return e
+print(guides_page_turner(n)[89])
+
+
+    
+
+
+#print(guides_parser())
+
 
 
     
