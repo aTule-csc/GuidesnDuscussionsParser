@@ -1,15 +1,78 @@
 import telebot
-import requests
+from telebot import types
 from bs4 import BeautifulSoup
-import urllib.request
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 load_dotenv()
 import json
+import ParserTest
+
 bot = telebot.TeleBot(os.getenv("token"))
+@bot.message_handler(commands=['test'])
+def test(message):
+    bot.send_message(message.from_user.id,'test')
+@bot.message_handler(commands=['start','back'])
+def start(message):
+    markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1=types.KeyboardButton("Начать")
+    markup.add(item1)
+    bot.send_message(message.chat.id,"ae",reply_markup=markup)
+@bot.message_handler(content_types='text')
+def main(message):
+    if message.text=="Начать":
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("Парсить обсуждения")
+        item2=types.KeyboardButton("Парсить руководства")
+        item3=types.KeyboardButton("Изменить список")
+        markup.add(item1)
+        markup.add(item2)
+        markup.add(item3)
+        bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
+    disc_parse(message)
+    guides_parse(message)
+    list_change(message)
 
+def disc_parse(message):
+    if message.text=="Парсить обсуждения":
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("Без фильтров")
+        item2=types.KeyboardButton("С фильтром")
+        markup.add(item1)
+        markup.add(item2)
+        bot.send_message(message.chat.id,"Как именно парсить обсуждения?",reply_markup=markup)
+    disc_parser_wof(message)
 
+def guides_parse(message):
+    if message.text=="Парсить руководства":
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("Без фильтров")
+        item2=types.KeyboardButton("С фильтром")
+        markup.add(item1)
+        markup.add(item2)
+        bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
+
+def list_change(message):
+    if message.text=="Изменить список":
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("Добавить")
+        item2=types.KeyboardButton("Удалить")
+        item3=types.KeyboardButton("Редактировать")
+        markup.add(item1)
+        markup.add(item2)
+        markup.add(item3)
+        bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
+
+def disc_parser_wof(message):
+    if message.text=="Без фильтров":
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("1")
+        item2=types.KeyboardButton('2')
+        markup.add(item1)
+        markup.add(item2)
+        bot.send_message(message.chat.id,"Сколько страниц?",reply_markup=markup)
+    if message.text=='1':
+        bot.send_message(message.from_user.id,ParserTest.disc_page_turner(1))
 
 
 bot.infinity_polling()

@@ -26,14 +26,23 @@ def disc_parser(game_id,page):
             name="ЗАКРЕПЛЕНО "+span_text.next_sibling.strip()
         else:
             name=forum_topic_name.text.strip()
-        author = post.find("div", class_ = "forum_topic_op").text.strip()
-        reply_count = post.find("div", class_ = "forum_topic_reply_count").text.strip()
-        lastpost = post.find("div", class_ = "forum_topic_lastpost").get("title")
+        if post.find("div", class_ = "forum_topic_op") is None:
+            author='-'
+        else:
+            author = post.find("div", class_ = "forum_topic_op").text.strip()
+        if post.find("div", class_ = "forum_topic_reply_count") is None:
+            reply_count = '-'
+        else:
+            reply_count = post.find("div", class_ = "forum_topic_reply_count").text.strip()
+        if post.find("div", class_ = "forum_topic_reply_count") is None:
+            lastpost="-"
+        else:
+            lastpost = post.find("div", class_ = "forum_topic_lastpost").get("title")
         posts.append((name, url,author,reply_count,lastpost))
     return posts
 def diss_sort_test():
     a = 'Jacket'
-    b = steam_parse()
+    b = guides_parser()
     #def sort(a,b):
     results = []
     for i in b:
@@ -73,7 +82,7 @@ def guides_page_turner(n):
     for i in range (1,n+1):
         e+=guides_parser(game_id,i)
     return e
-print(guides_page_turner(n)[89])
+print(disc_page_turner(n))
 
 
     

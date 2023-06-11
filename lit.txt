@@ -1,0 +1,3 @@
+https://habr.com/ru/articles/580408/
+https://docs.python-telegram-bot.org/en/stable/telegram.keyboardbutton.html
+https://ru.hexlet.io/qna/python/questions/kak-importirovat-funktsiyu-iz-drugogo-fayla-v-python
