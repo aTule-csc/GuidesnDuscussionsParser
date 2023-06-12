@@ -40,6 +40,7 @@ def disc_parser(game_id,page):
             lastpost = post.find("div", class_ = "forum_topic_lastpost").get("title")
         posts.append((name, url,author,reply_count,lastpost))
     return posts
+
 def diss_sort_test():
     a = 'Jacket'
     b = guides_parser()
@@ -69,58 +70,72 @@ def guides_parser(game_id,page):
     
     return guides
 
-def disc_page_turner(n):
+def disc_page_former(n):
     #одна страница = 15 обсуждений
     results=''
-    e=[]
+    lst=[]
     for i in range (1,n+1):
         results +=f"""
 Страница {i}
         
         """
-        e=disc_parser(game_id,i)
-        for j in e:
-            results+=f"""
-Topic : {j[0]}
+        lst=disc_parser(game_id,i)
+        results+=disc_info_former(lst)
+    return results
+
+def guides_page_former(n):
+    #одна страница = 30 гайдов
+    #выдаёт ошибку из-за слишком длиного сообщения
+    lst=[]
+    results=""
+    for i in range (1,n+1):
+        results+=f"""
+Страница {i}
+
+"""
+        lst=guides_parser(game_id,i)
+        results+=guides_info_former(lst)
+    return results
+
+def disc_info_former(lst):
+    str=''
+    for j in lst:
+            str+=f"""
+Topic: {j[0]}
 URL: {j[1]}
 Автор: {j[2]}
 Кол-во записей: {j[3]}
 Последнее сообщение: {j[4]}
 
-
 """
-    return results
-
-def guides_page_turner(n):
-    #одна страница = 30 гайдов
-    #выдаёт ошибку из-за слишком длиного сообщения
-    e=[]
-    results=""
-    for i in range (1,n+1):
-        results+=f"""
-Страница {i}"""
-        e=guides_parser(game_id,i)
-        for j in e:
-            results+=f'''
+    return str
+    
+def guides_info_former(lst):
+    str=''
+    for j in lst:
+            str+=f'''
 Name: {j[0]}
 Автор: {j[1]}
 Описание: {j[3]}
 Ссылка: {j[2]} 
             '''
-    return results
-#disc_page_turner(n)
-print(disc_page_turner(n))
+    return str
 
+def check_game_id(game):
+    html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text
+    soup = BeautifulSoup(html, 'html.parser')
+    divs = bool(soup.find("div", class_ = 'forum_topic'))
+    if divs is True:
+        return game
+    else:
+        return -1
 
-    
+def game_changer():
+    return 0
 
+check_game_id(1)
+#print(guides_page_former(n))
 
-#print(guides_parser())
-
-
-
-    
-#print(steam_parse())
 
 """
 a=requests.get('https://steamcommunity.com/app/218620/discussions/').text

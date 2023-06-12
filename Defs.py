@@ -1,14 +1,8 @@
-import telebot
 import re
 import requests
 from bs4 import BeautifulSoup
-import urllib.request
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import os
-load_dotenv()
-import json
-#bot = telebot.TeleBot(os.getenv("token"))
+
 game_id = 218620
 page = 1
 n=3
@@ -40,18 +34,6 @@ def disc_parser(game_id,page):
             lastpost = post.find("div", class_ = "forum_topic_lastpost").get("title")
         posts.append((name, url,author,reply_count,lastpost))
     return posts
-def diss_sort_test():
-    a = 'Jacket'
-    b = guides_parser()
-    #def sort(a,b):
-    results = []
-    for i in b:
-        pattern =re.compile(a)
-        line = i[0]
-        c=bool(pattern.search(line))
-        if c == True:
-            results.append(i)
-    print(results)
 
 def guides_parser(game_id,page):
     html=requests.get(f"https://steamcommunity.com/app/{game_id}/guides/?searchText=&browsefilter=trend&browsesort=creationorder&requiredtags%5B0%5D=-1&p={page}").text
@@ -108,29 +90,3 @@ Name: {j[0]}
 Ссылка: {j[2]} 
             '''
     return results
-#disc_page_turner(n)
-print(disc_page_turner(n))
-
-
-    
-
-
-#print(guides_parser())
-
-
-
-    
-#print(steam_parse())
-
-"""
-a=requests.get('https://steamcommunity.com/app/218620/discussions/').text
-print(a)
-soup = BeautifulSoup(a, "html.parser")
-info = soup.find_all('div',class_='forum_topic  unread')
-print(a)
-req = urllib.request.Request('https://steamcommunity.com/app/218620/discussions/',)
-with urllib.request.urlopen(req) as response:
-    the_page = response.read()
-print(the_page)
-"""
-#bot.infinity_polling()

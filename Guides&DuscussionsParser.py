@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 import json
-import ParserTest
+import Defs
 
 bot = telebot.TeleBot(os.getenv("token"))
 
@@ -64,9 +64,9 @@ def list_change(message):
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
-        bot.send_message(message.from_user.id,ParserTest.disc_page_turner(1))
+        bot.send_message(message.from_user.id,Defs.disc_page_turner(1))
 
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
-        bot.send_message(message.from_user.id,ParserTest.guides_page_turner(1))
+        bot.send_message(message.from_user.id,Defs.guides_page_turner(1))
 bot.infinity_polling()
