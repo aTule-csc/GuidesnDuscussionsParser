@@ -71,17 +71,44 @@ def guides_parser(game_id,page):
 
 def disc_page_turner(n):
     #одна страница = 15 обсуждений
+    results=''
     e=[]
     for i in range (1,n+1):
-        e+=disc_parser(game_id,i)
-    return e
+        results +=f"""
+Страница {i}
+        
+        """
+        e=disc_parser(game_id,i)
+        for j in e:
+            results+=f"""
+Topic : {j[0]}
+URL: {j[1]}
+Автор: {j[2]}
+Кол-во записей: {j[3]}
+Последнее сообщение: {j[4]}
+
+
+"""
+    return results
 
 def guides_page_turner(n):
     #одна страница = 30 гайдов
+    #выдаёт ошибку из-за слишком длиного сообщения
     e=[]
+    results=""
     for i in range (1,n+1):
-        e+=guides_parser(game_id,i)
-    return e
+        results+=f"""
+Страница {i}"""
+        e=guides_parser(game_id,i)
+        for j in e:
+            results+=f'''
+Name: {j[0]}
+Автор: {j[1]}
+Описание: {j[3]}
+Ссылка: {j[2]} 
+            '''
+    return results
+#disc_page_turner(n)
 print(disc_page_turner(n))
 
 

@@ -9,9 +9,7 @@ import json
 import ParserTest
 
 bot = telebot.TeleBot(os.getenv("token"))
-@bot.message_handler(commands=['test'])
-def test(message):
-    bot.send_message(message.from_user.id,'test')
+
 @bot.message_handler(commands=['start','back'])
 def start(message):
     markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -36,8 +34,8 @@ def main(message):
 def disc_parse(message):
     if message.text=="Парсить обсуждения":
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1=types.KeyboardButton("Без фильтров")
-        item2=types.KeyboardButton("С фильтром")
+        item1=types.KeyboardButton("Первая страница обсуждений")
+        item2=types.KeyboardButton("Обсуждения с фильтром")
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить обсуждения?",reply_markup=markup)
@@ -51,6 +49,7 @@ def guides_parse(message):
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
+    guides_parser_wof(message)
 
 def list_change(message):
     if message.text=="Изменить список":
@@ -64,15 +63,10 @@ def list_change(message):
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
 
 def disc_parser_wof(message):
-    if message.text=="Без фильтров":
-        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1=types.KeyboardButton("1")
-        item2=types.KeyboardButton('2')
-        markup.add(item1)
-        markup.add(item2)
-        bot.send_message(message.chat.id,"Сколько страниц?",reply_markup=markup)
-    if message.text=='1':
+    if message.text=="Первая страница обсуждений":
         bot.send_message(message.from_user.id,ParserTest.disc_page_turner(1))
 
-
+def guides_parser_wof(message):
+    if message.text=="Без фильтров":
+        bot.send_message(message.from_user.id,ParserTest.guides_page_turner(1))
 bot.infinity_polling()
