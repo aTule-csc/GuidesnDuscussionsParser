@@ -19,7 +19,7 @@ def start(message):
 @bot.message_handler(content_types='text')
 def main(message):
     if message.text=="Начать":
-        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
         item1=types.KeyboardButton("Парсить обсуждения")
         item2=types.KeyboardButton("Парсить руководства")
         item3=types.KeyboardButton("Изменить список")
@@ -53,10 +53,10 @@ def guides_parse(message):
 
 def list_change(message):
     if message.text=="Изменить список":
-        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1=types.KeyboardButton("Добавить")
-        item2=types.KeyboardButton("Удалить")
-        item3=types.KeyboardButton("Редактировать")
+        markup = types.InlineKeyboardMarkup()
+        item1=types.InlineKeyboardButton("Добавить",callback_data="list_add")
+        item2=types.InlineKeyboardButton("Удалить",callback_data="list_remove")
+        item3=types.InlineKeyboardButton("Редактировать", callback_data="list_replace")
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
