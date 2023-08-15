@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 import json
+import sqlite3
 #bot = telebot.TeleBot(os.getenv("token"))
 game_id = 218620
 page = 1
@@ -134,6 +135,10 @@ def game_changer():
     return 0
 
 check_game_id(1)
+
+def set_game_id(game_id):
+    return 0
+
 #print(guides_page_former(n))
 
 

@@ -1,4 +1,5 @@
 import telebot
+import sqlite3;
 from telebot import types
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -26,6 +27,12 @@ def main(message):
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
+        id = message.from_user.id
+        ug = (id, 218620)
+        con = sqlite3.connect("users_games.db")
+        print(ug)
+        cursor = con.cursor()
+        cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
         bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
     disc_parse(message)
     guides_parse(message)
