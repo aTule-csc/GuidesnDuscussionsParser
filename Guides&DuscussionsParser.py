@@ -28,12 +28,16 @@ def main(message):
         markup.add(item2)
         markup.add(item3)
         id = message.from_user.id
-        ug = (id, 218620)
         con = sqlite3.connect("users_games.db")
-        print(ug) #remove after tests
-        cursor = con.cursor()
-        cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
-        con.commit()
+        test = con.cursor()
+        test.execute(f"SELECT * FROM Users_games WHERE user_id={id}")
+        testvalue = test.fetchall()
+        if len(testvalue) == 0:
+            cursor = con.cursor()
+            ug = (id, 218620)
+            cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
+            con.commit()
+        cursor.close()
         bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
     disc_parse(message)
     guides_parse(message)
