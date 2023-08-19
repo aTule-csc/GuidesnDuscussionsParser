@@ -134,10 +134,17 @@ def check_game_id(game):
 def game_changer():
     return 0
 
-check_game_id(1)
+id = 6029053748
 
-def set_game_id(game_id):
-    return 0
+con = sqlite3.connect("users_games.db")
+test = con.cursor()
+test.execute(f"SELECT * FROM Users_games WHERE user_id=1")
+testvalue = test.fetchall()
+if len(testvalue) == 0:
+    print("denied")
+        
+
+#check_game_id(1)
 
 #print(guides_page_former(n))
 
