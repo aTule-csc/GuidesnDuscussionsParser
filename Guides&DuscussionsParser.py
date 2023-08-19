@@ -27,6 +27,7 @@ def main(message):
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
+        #в функцию\/\/\/
         id = message.from_user.id
         ug = (id, 218620)
         con = sqlite3.connect("users_games.db")
@@ -34,6 +35,7 @@ def main(message):
         cursor = con.cursor()
         cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
         con.commit()
+        #/\/\/\
         bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
     disc_parse(message)
     guides_parse(message)
