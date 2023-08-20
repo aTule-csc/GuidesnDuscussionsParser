@@ -28,18 +28,8 @@ def main(message):
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
-        id = message.from_user.id
-        con = sqlite3.connect("users_games.db")
-        test = con.cursor()
-        test.execute(f"SELECT * FROM Users_games WHERE user_id={id}")
-        testvalue = test.fetchall()
-        test.close()
-        if len(testvalue) == 0:
-            cursor = con.cursor()
-            ug = (id, 218620)
-            cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
-            con.commit()
-            cursor.close()
+        User_id = message.from_user.id
+        Defs.entry_id_set(User_id)
         bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
         
     disc_parse(message)
@@ -67,12 +57,13 @@ def guides_parse(message):
     guides_parser_wof(message)
 def list_change(message):
     if message.text=="Изменить список":
-        markup = types.InlineKeyboardMarkup()
-        item1=types.InlineKeyboardButton("Добавить свою игру",callback_data="list_add")
-        item2=types.InlineKeyboardButton("Выбрать из списка", callback_data="list_replace")
+        markup=types.ReplyKeyboardMarkup()
+        item1=types.KeyboardButton("Добавить свою игру")
+        item2=types.KeyboardButton("Выбрать игру из списка")
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
+    set_game_id(message)
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
@@ -81,9 +72,35 @@ def disc_parser_wof(message):
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
         bot.send_message(message.from_user.id,Defs.guides_page_turner(1))
-@bot.callback_query_handler(func=lambda callback: True)
-def game_add(callback):
-    if callback.data == "list_add":
-        bot.send_message(callback.message.chat.id, "Введите Steam ID нужной вам игры")
+
+def set_game_id(message):
+    if message.text=="Добавить свою игру":
+        bot.send_message(message.from_user.id,"Введи Steam ID" )
+        bot.register_next_step_handler(message,game_add)
+
+
+def game_add(message):
+    game_id = Defs.check_game_id(message.text)
+
+    if game_id == -1:
+        bot.send_message(message.message.from_user.id, "Нет такого Steam ID, замена не произведена")
+    else:
+        con = sqlite3.connect("users_games.db")
+        cursor = con.cursor()
+        cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
+
 
 bot.infinity_polling()
+
+
+"""        bot.register_next_step_handler(callback,game_add1)
+def game_add1(callback):
+    game_id = Defs.check_game_id(callback.text)
+
+    if game_id == -1:
+        bot.send_message(callback.message.from_user.id, "Нет такого Steam ID, замена не произведена")
+    else:
+        con = sqlite3.connect("users_games.db")
+        cursor = con.cursor()
+        cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {callback.from_user.id}")
+"""

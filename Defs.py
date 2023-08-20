@@ -7,8 +7,18 @@ import sqlite3
 game_id = 218620
 page = 1
 n=3
-
-
+def entry_id_set(id):
+    con = sqlite3.connect("users_games.db")
+    test = con.cursor()
+    test.execute(f"SELECT * FROM Users_games WHERE user_id={id}")
+    testvalue = test.fetchall()
+    test.close()
+    if len(testvalue) == 0:
+        cursor = con.cursor()
+        ug = (id, 218620)
+        cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
+        con.commit()
+        cursor.close()
 
 def disc_parser(game_id,page):
     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text
@@ -94,3 +104,11 @@ Name: {j[0]}
 Ссылка: {j[2]} 
             '''
     return results
+def check_game_id(game):
+    html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text
+    soup = BeautifulSoup(html, 'html.parser')
+    divs = bool(soup.find("div", class_ = 'forum_topic'))
+    if divs is True:
+        return game
+    else:
+        return -1
