@@ -7,7 +7,7 @@ import os
 load_dotenv()
 import json
 
-bot = telebot.TeleBot("6067081940:AAFhjizosYzig3DNVVwArj0AiPpxIIgQiks")
+bot = telebot.TeleBot(os.getenv("token"))
 #работает, надо перенести на основной проект
 @bot.message_handler(commands=['start','back'])
 def start(message):
