@@ -2,10 +2,14 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+import sqlite3
 
 game_id = 218620
 page = 1
 n=3
+
+
+
 def disc_parser(game_id,page):
     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text
     soup = BeautifulSoup(html, 'html.parser') 

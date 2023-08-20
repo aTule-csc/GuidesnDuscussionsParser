@@ -1,5 +1,6 @@
 import telebot
-import sqlite3;
+from telebot import types
+import sqlite3
 from telebot import types
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -27,7 +28,6 @@ def main(message):
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
-        #в функцию\/\/\/
         id = message.from_user.id
         con = sqlite3.connect("users_games.db")
         test = con.cursor()
@@ -41,7 +41,7 @@ def main(message):
             con.commit()
             cursor.close()
         bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
-        #/\/\/\
+        
     disc_parse(message)
     guides_parse(message)
     list_change(message)
@@ -65,16 +65,13 @@ def guides_parse(message):
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
     guides_parser_wof(message)
-
 def list_change(message):
     if message.text=="Изменить список":
         markup = types.InlineKeyboardMarkup()
-        item1=types.InlineKeyboardButton("Добавить",callback_data="list_add")
-        item2=types.InlineKeyboardButton("Удалить",callback_data="list_remove")
-        item3=types.InlineKeyboardButton("Редактировать", callback_data="list_replace")
+        item1=types.InlineKeyboardButton("Добавить свою игру",callback_data="list_add")
+        item2=types.InlineKeyboardButton("Выбрать из списка", callback_data="list_replace")
         markup.add(item1)
         markup.add(item2)
-        markup.add(item3)
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
 
 def disc_parser_wof(message):
@@ -84,4 +81,9 @@ def disc_parser_wof(message):
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
         bot.send_message(message.from_user.id,Defs.guides_page_turner(1))
+@bot.callback_query_handler(func=lambda callback: True)
+def game_add(callback):
+    if callback.data == "list_add":
+        bot.send_message(callback.message.chat.id, "Введите Steam ID нужной вам игры")
+
 bot.infinity_polling()
