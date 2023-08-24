@@ -144,6 +144,14 @@ if len(testvalue) == 0:
     print("denied")
         
 
+def get_game_id(id):
+    con = sqlite3.connect("users_games.db")
+    test = con.cursor()
+    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
+    e,testvalue = test.fetchone()
+    return testvalue
+print(get_game_id(id))
+
 #check_game_id(1)
 
 #print(guides_page_former(n))
