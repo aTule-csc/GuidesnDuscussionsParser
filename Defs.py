@@ -112,3 +112,10 @@ def check_game_id(game):
         return game
     else:
         return -1
+    
+def get_game_id(id):
+    con = sqlite3.connect("users_games.db")
+    test = con.cursor()
+    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
+    e,testvalue = test.fetchone()
+    return testvalue
