@@ -104,6 +104,14 @@ Name: {j[0]}
 Ссылка: {j[2]} 
             '''
     return results
+
+def get_game_id(id):
+    con = sqlite3.connect("users_games.db")
+    test = con.cursor()
+    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
+    e,testvalue = test.fetchone()
+    return testvalue
+
 def check_game_id(game):
     html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text
     soup = BeautifulSoup(html, 'html.parser')
@@ -112,10 +120,3 @@ def check_game_id(game):
         return game
     else:
         return -1
-    
-def get_game_id(id):
-    con = sqlite3.connect("users_games.db")
-    test = con.cursor()
-    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
-    e,testvalue = test.fetchone()
-    return testvalue

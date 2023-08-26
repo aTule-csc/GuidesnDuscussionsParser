@@ -24,7 +24,7 @@ def main(message):
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
         item1=types.KeyboardButton("Парсить обсуждения")
         item2=types.KeyboardButton("Парсить руководства")
-        item3=types.KeyboardButton("Изменить список")
+        item3=types.KeyboardButton("Изменить список игр")
         item4=types.KeyboardButton("Список ключевых слов")
         markup.add(item1)
         markup.add(item2)
@@ -36,7 +36,7 @@ def main(message):
         
     disc_parse(message)
     guides_parse(message)
-    list_change(message)
+    game_list_change(message)
     word_change(message)
 
 def disc_parse(message):
@@ -59,8 +59,8 @@ def guides_parse(message):
         bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
     guides_parser_wof(message)
 
-def list_change(message):
-    if message.text=="Изменить список":
+def game_list_change(message):
+    if message.text=="Изменить список игр":
         markup=types.ReplyKeyboardMarkup()
         item1=types.KeyboardButton("Добавить свою игру")
         item2=types.KeyboardButton("Выбрать игру из списка")
@@ -78,6 +78,8 @@ def word_change(message):
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
+    word_list_change(message)
+    word_pick(message)
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
@@ -173,15 +175,34 @@ def games_from_list(callback):
     cursor.close()
     bot.send_message(callback.message.chat.id, "Замена произведена")
 
+def word_list_change(message):
+    if message.text=="Изменить список":
+        markup = types.InlineKeyboardMarkup()
+        item1=types.InlineKeyboardButton("Добавить",callback_data="list_add")
+        item2=types.InlineKeyboardButton("Изменить",callback_data="list_replace")
+        item3=types.InlineKeyboardButton("Удалить",callback_data="list_remove")
+        row1 = [item1]
+        row2 = [item2]
+        row3 = [item3]
+        rows =[row1,row2,row3]
+        markup = telebot.types.InlineKeyboardMarkup(rows)
+        bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
+
 def word_pick(message):
-        if message.text=="":
+        if message.text=="Выбрать слово из списка":
             markup = types.InlineKeyboardMarkup()
-            item1=types.InlineKeyboardButton("Парсить обсуждения",)
-            item2=types.InlineKeyboardButton("Парсить руководства")
-            item3=types.InlineKeyboardButton("Изменить список")
-            item4=types.KeyboardButton("Изменить ключевое слово")
-            item5=types.KeyboardButton("Изменить ключевое слово")
-            markup = telebot.types.InlineKeyboardMarkup(item1,item2,item3,item4,item5)
+            item1=types.InlineKeyboardButton("1",callback_data='1')
+            item2=types.InlineKeyboardButton("2",callback_data='2')
+            item3=types.InlineKeyboardButton("3",callback_data='3')
+            item4=types.InlineKeyboardButton("4",callback_data='4')
+            item5=types.InlineKeyboardButton("5",callback_data='5')
+            row1 = [item1]
+            row2 = [item2]
+            row3 = [item3]
+            row4 = [item4]
+            row5 = [item5]
+            rows = [row1,row2,row3,row4,row5]
+            markup = telebot.types.InlineKeyboardMarkup(rows)
             bot.send_message(message.chat.id,"Test",reply_markup=markup)
 bot.infinity_polling()
 
