@@ -25,10 +25,3 @@ def csc_or_shosh(callback):
 bot.infinity_polling()
 
 
-
-"""
-markup = types.InlineKeyboardMarkup()
-markup.add(types.InlineKeyboardButton('СЫС', callback_data='qs_csc'))
-markup.add(types.InlineKeyboardButton('SHOSH', callback_data='qs_shosh'))
-bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
-"""

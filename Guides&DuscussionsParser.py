@@ -11,7 +11,26 @@ import json
 import Defs
 
 bot = telebot.TeleBot(os.getenv("token"))
-
+dic={"list1" : 1172470,
+    "list2" : 870780,
+    "list3" : 381210,
+    "list4" : 548430,
+    "list5" : 217980,
+    "list6" : 782330,
+    "list7" : 403640,
+    "list8" : 239140,
+    "list9" : 534380,
+    'list10' : 70,
+    'list11' : 220,
+    'list12' : 232090,
+    'list13' : 17410,
+    'list14' : 1233570,
+    'list15' : 218620,
+    'list16' : 620,
+    'list17' : 105600,
+    'list18' : 440,
+    'list19' : 1237970,
+    'list20' : 230410}
 @bot.message_handler(commands=['start','back'])
 def start(message):
     markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -97,7 +116,6 @@ def set_game_id(message):
 
 def game_add(message):
     game_id = Defs.check_game_id(message.text)
-
     if game_id == -1:
         bot.send_message(message.message.from_user.id, "Нет такого Steam ID, замена не произведена")
     else:
@@ -146,47 +164,41 @@ def game_list(message):
         bot.send_message(message.chat.id,"Test",reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda callback: True)
-def games_from_list(callback):
-    dic={"list1" : 1172470,
-        "list2" : 870780,
-        "list3" : 381210,
-        "list4" : 548430,
-        "list5" : 217980,
-        "list6" : 782330,
-        "list7" : 403640,
-        "list8" : 239140,
-        "list9" : 534380,
-        'list10' : 70,
-        'list11' : 220,
-        'list12' : 232090,
-        'list13' : 17410,
-        'list14' : 1233570,
-        'list15' : 218620,
-        'list16' : 620,
-        'list17' : 105600,
-        'list18' : 440,
-        'list19' : 1237970,
-        'list20' : 230410}
-    game_id = dic[callback.data]
-    con = sqlite3.connect("users_games.db")
-    cursor = con.cursor()
-    cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
-    con.commit()
-    cursor.close()
-    bot.send_message(callback.message.chat.id, "Замена произведена")
-
+def callback_data_handler(callback):
+    if callback.data == dic.keys():
+        game_id = dic[callback.data]
+        con = sqlite3.connect("users_games.db")
+        cursor = con.cursor()
+        cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
+        con.commit()
+        cursor.close()
+        bot.send_message(callback.message.chat.id, "Замена произведена")
 def word_list_change(message):
     if message.text=="Изменить список":
-        markup = types.InlineKeyboardMarkup()
-        item1=types.InlineKeyboardButton("Добавить",callback_data="list_add")
-        item2=types.InlineKeyboardButton("Изменить",callback_data="list_replace")
-        item3=types.InlineKeyboardButton("Удалить",callback_data="list_remove")
-        row1 = [item1]
-        row2 = [item2]
-        row3 = [item3]
-        rows =[row1,row2,row3]
-        markup = telebot.types.InlineKeyboardMarkup(rows)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1=types.KeyboardButton("Добавить слово")
+        item2=types.KeyboardButton("Изменить слово")
+        item3=types.KeyboardButton("Удалить слово")
+        markup.add(item1)
+        markup.add(item2)
+        markup.add(item3)
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
+    word_add_replace_remove(message)
+
+def word_add_replace_remove(message):
+    if message.text == "Добавить слово":
+        bot.send_message(message.chat.id,"Введите слово которое хотите добавить")
+        bot.register_next_step_handler(message,word_list_add)
+    if message.text == "Изменить слово":
+        bot.send_message(message.chat.id,"Введите слово которое хотите изменить")
+    if message.text == "Удалить слово":
+        bot.send_message(message.chat.id,"Введите слово которое хотите удалить")
+def word_list_add(message):
+    con = sqlite3.connect("Key_Words.db")
+    cursor = con.cursor()
+    cursor.execute(f"SELECT key_word FROM Key_Words Where user_id = {message.chat.id}")
+
+    print(cursor.fetchall())
 
 def word_pick(message):
         if message.text=="Выбрать слово из списка":
@@ -196,14 +208,14 @@ def word_pick(message):
             item3=types.InlineKeyboardButton("3",callback_data='3')
             item4=types.InlineKeyboardButton("4",callback_data='4')
             item5=types.InlineKeyboardButton("5",callback_data='5')
-            row1 = [item1]
-            row2 = [item2]
-            row3 = [item3]
-            row4 = [item4]
-            row5 = [item5]
-            rows = [row1,row2,row3,row4,row5]
+            item6=types.InlineKeyboardButton("6",callback_data='6')
+            row1 = [item1,item2]
+            row2 = [item3,item4]
+            row3 = [item5,item6]
+            rows = [row1,row2,row3]
             markup = telebot.types.InlineKeyboardMarkup(rows)
             bot.send_message(message.chat.id,"Test",reply_markup=markup)
+
 bot.infinity_polling()
 
 
