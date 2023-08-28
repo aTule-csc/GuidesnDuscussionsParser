@@ -173,6 +173,7 @@ def callback_data_handler(callback):
         con.commit()
         cursor.close()
         bot.send_message(callback.message.chat.id, "Замена произведена")
+
 def word_list_change(message):
     if message.text=="Изменить список":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
@@ -192,13 +193,39 @@ def word_add_replace_remove(message):
     if message.text == "Изменить слово":
         bot.send_message(message.chat.id,"Введите слово которое хотите изменить")
     if message.text == "Удалить слово":
-        bot.send_message(message.chat.id,"Введите слово которое хотите удалить")
-def word_list_add(message):
-    con = sqlite3.connect("Key_Words.db")
-    cursor = con.cursor()
-    cursor.execute(f"SELECT key_word FROM Key_Words Where user_id = {message.chat.id}")
+        words_list = Defs.get_key_words(message)
+        bot.send_message(message.chat.id,f"Введите слово которое хотите удалить, список ваших слов :{words_list}")
+        bot.register_next_step_handler(message,word_list_remove)
 
-    print(cursor.fetchall())
+def word_list_add(message):
+    word = message.text
+    words_list = Defs.get_key_words(message)
+    if len(words_list) > 5:
+        bot.send_message(message.chat.id,"Лимит слов превышен, добавление невозможно")
+    if word in words_list:
+        bot.send_message(message.chat.id,"Данное слово существует в вашем списке, добавление отменено")
+    else:
+        insert_values = (message.chat.id, word)
+        con = sqlite3.connect("Key_Words.db")
+        cursor = con.cursor()
+        cursor.execute("INSERT INTO Key_Words (user_id, key_word) VALUES (?, ?)",insert_values)
+        con.commit()
+        cursor.close()
+        bot.send_message(message.chat.id,"Добавление произведено")
+
+def word_list_remove(message):
+    word = message.text
+    words_list = Defs.get_key_words(message)
+    if word in words_list:
+        con = sqlite3.connect("Key_Words.db")
+        cursor = con.cursor()
+        cursor.execute(f"DELETE FROM Key_Words WHERE key_word = {word}")
+        con.commit()
+        cursor.close()
+        bot.send_message(message.chat.id,"Удаление произведено")
+    else:
+        bot.send_message(message.chat.id,"Данное слово не существует в вашем списке, удаление отменено")
+
 
 def word_pick(message):
         if message.text=="Выбрать слово из списка":
