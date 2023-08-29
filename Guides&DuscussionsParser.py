@@ -191,7 +191,7 @@ def word_add_replace_remove(message):
         bot.send_message(message.chat.id,"Введите слово которое хотите добавить")
         bot.register_next_step_handler(message,word_list_add)
     if message.text == "Изменить слово":
-        bot.send_message(message.chat.id,"Введите слово которое хотите изменить")
+        bot.send_message(message.chat.id,f"Введите слово которое хотите изменить, список ваших слов :{words_list}")
     if message.text == "Удалить слово":
         words_list = Defs.get_key_words(message)
         bot.send_message(message.chat.id,f"Введите слово которое хотите удалить, список ваших слов :{words_list}")
@@ -213,13 +213,26 @@ def word_list_add(message):
         cursor.close()
         bot.send_message(message.chat.id,"Добавление произведено")
 
+def word_list_replace(message):
+    word = message.text
+    words_list = Defs.get_key_words(message)
+    if word in words_list:
+        con = sqlite3.connect("Key_Words.db")
+        cursor = con.cursor()
+        cursor.execute(f"UPDATE FROM Key_Words WHERE key_word = {word} and user_id={message.chat.id}")
+        con.commit()
+        cursor.close()
+        bot.send_message(message.chat.id,"Замена произведено")
+    else:
+        bot.send_message(message.chat.id,"Данное слово не существует в вашем списке, замена отменена")
+
 def word_list_remove(message):
     word = message.text
     words_list = Defs.get_key_words(message)
     if word in words_list:
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
-        cursor.execute(f"DELETE FROM Key_Words WHERE key_word = {word}")
+        cursor.execute(f"DELETE FROM Key_Words WHERE key_word = {word} and user_id={message.chat.id}")
         con.commit()
         cursor.close()
         bot.send_message(message.chat.id,"Удаление произведено")
