@@ -242,13 +242,15 @@ def word_list_remove(message):
 
 def word_pick(message):
         if message.text=="Выбрать слово из списка":
+            word_list = Defs.get_key_words(message)
+
             markup = types.InlineKeyboardMarkup()
-            item1=types.InlineKeyboardButton("1",callback_data='1')
-            item2=types.InlineKeyboardButton("2",callback_data='2')
-            item3=types.InlineKeyboardButton("3",callback_data='3')
-            item4=types.InlineKeyboardButton("4",callback_data='4')
-            item5=types.InlineKeyboardButton("5",callback_data='5')
-            item6=types.InlineKeyboardButton("6",callback_data='6')
+            item1=types.InlineKeyboardButton(f"{word_list[0]}",callback_data='1')
+            item2=types.InlineKeyboardButton(f"{word_list[1]}",callback_data='2')
+            item3=types.InlineKeyboardButton(f"{word_list[2]}",callback_data='3')
+            item4=types.InlineKeyboardButton(f"{word_list[3]}",callback_data='4')
+            item5=types.InlineKeyboardButton(f"{word_list[4]}",callback_data='5')
+            item6=types.InlineKeyboardButton(f"{word_list[5]}",callback_data='6')
             row1 = [item1,item2]
             row2 = [item3,item4]
             row3 = [item5,item6]
