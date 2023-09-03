@@ -23,8 +23,10 @@ def entry_id_set(id):
 def get_key_words(message):
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
-    cursor.execute(f"SELECT key_word FROM Key_Words Where user_id = {message.chat.id}")
-    return cursor.fetchall()
+    cursor.execute(f"SELECT user_id,key_word FROM Key_Words Where user_id = {message.chat.id}")
+    e,return_value = cursor.fetchall()
+    print(return_value)
+    return return_value
 
 def disc_parser(game_id,page):
     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text

@@ -11,7 +11,8 @@ import json
 import Defs
 
 bot = telebot.TeleBot(os.getenv("token"))
-dic={"list1" : 1172470,
+
+games_dic={"list1" : 1172470,
     "list2" : 870780,
     "list3" : 381210,
     "list4" : 548430,
@@ -31,6 +32,14 @@ dic={"list1" : 1172470,
     'list18' : 440,
     'list19' : 1237970,
     'list20' : 230410}
+
+words_dic ={"word1":0,
+            "word2":1,
+            "word3":2,
+            "word4":3,
+            "word5":4,
+            "word6":5}
+
 @bot.message_handler(commands=['start','back'])
 def start(message):
     markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -165,14 +174,16 @@ def game_list(message):
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_data_handler(callback):
-    if callback.data == dic.keys():
-        game_id = dic[callback.data]
+    if callback.data == games_dic.keys():
+        game_id = games_dic[callback.data]
         con = sqlite3.connect("users_games.db")
         cursor = con.cursor()
         cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
         con.commit()
         cursor.close()
         bot.send_message(callback.message.chat.id, "Замена произведена")
+    if callback.data == words_dic.keys():
+        #callback.message.chat.id
 
 def word_list_change(message):
     if message.text=="Изменить список":
@@ -242,15 +253,18 @@ def word_list_remove(message):
 
 def word_pick(message):
         if message.text=="Выбрать слово из списка":
-            word_list = Defs.get_key_words(message)
-
+            word_tuple = Defs.get_key_words(message)
+            word_list =list(word_tuple)
+            print(word_list)
+            while len(word_list) < 6:
+                word_list.append("---")
             markup = types.InlineKeyboardMarkup()
-            item1=types.InlineKeyboardButton(f"{word_list[0]}",callback_data='1')
-            item2=types.InlineKeyboardButton(f"{word_list[1]}",callback_data='2')
-            item3=types.InlineKeyboardButton(f"{word_list[2]}",callback_data='3')
-            item4=types.InlineKeyboardButton(f"{word_list[3]}",callback_data='4')
-            item5=types.InlineKeyboardButton(f"{word_list[4]}",callback_data='5')
-            item6=types.InlineKeyboardButton(f"{word_list[5]}",callback_data='6')
+            item1=types.InlineKeyboardButton(f"{word_list[0]}",callback_data='word1')
+            item2=types.InlineKeyboardButton(f"{word_list[1]}",callback_data='word2')
+            item3=types.InlineKeyboardButton(f"{word_list[2]}",callback_data='word3')
+            item4=types.InlineKeyboardButton(f"{word_list[3]}",callback_data='word4')
+            item5=types.InlineKeyboardButton(f"{word_list[4]}",callback_data='word5')
+            item6=types.InlineKeyboardButton(f"{word_list[5]}",callback_data='word6')
             row1 = [item1,item2]
             row2 = [item3,item4]
             row3 = [item5,item6]
