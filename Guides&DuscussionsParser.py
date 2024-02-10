@@ -182,7 +182,7 @@ def callback_data_handler(callback):
         con.commit()
         cursor.close()
         bot.send_message(callback.message.chat.id, "Замена произведена")
-    if callback.data == words_dic.keys():
+    #if callback.data == words_dic.keys():
         #callback.message.chat.id
 
 def word_list_change(message):

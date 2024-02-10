@@ -24,7 +24,7 @@ def get_key_words(message):
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
     cursor.execute(f"SELECT user_id,key_word FROM Key_Words Where user_id = {message.chat.id}")
-    e,return_value = cursor.fetchall()
+    e,return_value = cursor.fetchall() #e нужна чтобы обработать полученные данные в желаемом виде
     print(return_value)
     return return_value
 
