@@ -111,11 +111,11 @@ def word_change(message):
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
-        bot.send_message(message.from_user.id,Defs.disc_page_turner(1))
+        bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1))
 
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
-        bot.send_message(message.from_user.id,Defs.guides_page_turner(1))
+        bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1))
 
 def set_game_id(message):
     if message.text=="Добавить свою игру":

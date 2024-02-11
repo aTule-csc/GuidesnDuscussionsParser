@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import sqlite3
 
-game_id = 218620
+# game_id = 218620
 page = 1
 n=3
 def entry_id_set(id):
@@ -20,6 +20,13 @@ def entry_id_set(id):
         con.commit()
         cursor.close()
 
+def get_game_id(message):
+    con = sqlite3.connect("users_games.db")
+    test = con.cursor()
+    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={message.chat.id}")
+    e,testvalue = test.fetchone()
+    return testvalue
+
 def get_key_words(message):
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
@@ -28,7 +35,8 @@ def get_key_words(message):
     print(return_value)
     return return_value
 
-def disc_parser(game_id,page):
+def disc_parser(message,page):
+    game_id = get_game_id(message)
     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text
     soup = BeautifulSoup(html, 'html.parser') 
     divs = soup.find_all("div", class_ = 'forum_topic')
@@ -57,7 +65,8 @@ def disc_parser(game_id,page):
         posts.append((name, url,author,reply_count,lastpost))
     return posts
 
-def guides_parser(game_id,page):
+def guides_parser(message,page):
+    game_id = get_game_id(message)
     html=requests.get(f"https://steamcommunity.com/app/{game_id}/guides/?searchText=&browsefilter=trend&browsesort=creationorder&requiredtags%5B0%5D=-1&p={page}").text
     soup = BeautifulSoup(html, 'html.parser')
     find= soup.find_all("a", class_ = "workshopItemCollection ugc_show_warning_image ugc")
@@ -73,7 +82,7 @@ def guides_parser(game_id,page):
     
     return guides
 
-def disc_page_turner(n):
+def disc_page_turner(message,n):
     #одна страница = 15 обсуждений
     results=''
     e=[]
@@ -82,7 +91,7 @@ def disc_page_turner(n):
 Страница {i}
         
         """
-        e=disc_parser(game_id,i)
+        e=disc_parser(message,page)
         for j in e:
             results+=f"""
 Topic : {j[0]}
@@ -95,7 +104,7 @@ URL: {j[1]}
 """
     return results
 
-def guides_page_turner(n):
+def guides_page_turner(message,n):
     #одна страница = 30 гайдов
     #выдаёт ошибку из-за слишком длиного сообщения
     e=[]
@@ -103,22 +112,14 @@ def guides_page_turner(n):
     for i in range (1,n+1):
         results+=f"""
 Страница {i}"""
-        e=guides_parser(game_id,i)
+        e=guides_parser(message,i)
         for j in e:
             results+=f'''
 Name: {j[0]}
-Автор: {j[1]}
-Описание: {j[3]}
 Ссылка: {j[2]} 
             '''
     return results
 
-def get_game_id(id):
-    con = sqlite3.connect("users_games.db")
-    test = con.cursor()
-    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
-    e,testvalue = test.fetchone()
-    return testvalue
 
 def check_game_id(game):
     html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text

@@ -9,6 +9,7 @@ import os
 load_dotenv()
 import json
 import sqlite3
+import Defs
 #bot = telebot.TeleBot(os.getenv("token"))
 game_id = 218620
 page = 1
