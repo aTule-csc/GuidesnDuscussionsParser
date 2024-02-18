@@ -44,14 +44,15 @@ def disc_parser(game_id,page):
     return posts
 
 def diss_sort_test():
-    a = 'Jacket'
-    b = guides_parser()
+    a = 'payday'
+    b = guides_parser(game_id,page)
     #def sort(a,b):
     results = []
     for i in b:
-        pattern =re.compile(a)
         line = i[0]
-        c=bool(pattern.search(line))
+        # print(type(line))
+        pattern = re.compile(a)
+        c=bool(pattern.search(line.lower()))
         if c == True:
             results.append(i)
     print(results)
@@ -67,8 +68,8 @@ def guides_parser(game_id,page):
         title=guide.find("div", class_ ="workshopItemTitle").text.strip()
         author = guide.find("div", class_ = "workshopItemAuthorLine")
         author = author.find('span').text.strip()
-        desc = guide.find("div",class_ = "workshopItemShortDesc").text.strip()
-        guides.append((title, author, url, desc))
+        # desc = guide.find("div",class_ = "workshopItemShortDesc").text.strip()
+        guides.append((title, author, url ))#desc
     
     return guides
 
@@ -151,7 +152,7 @@ def get_game_id(id):
     test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
     e,testvalue = test.fetchone()
     return testvalue
-print(get_game_id(id))
+print(diss_sort_test())
 
 #check_game_id(1)
 

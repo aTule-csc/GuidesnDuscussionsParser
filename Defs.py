@@ -27,6 +27,13 @@ def get_game_id(message):
     e,testvalue = test.fetchone()
     return testvalue
 
+def get_key_word(message):
+    con = sqlite3.connect("users_games.db")
+    cur = con.cursor()
+    cur.execute(f"SELECT user_id,user_key_word FROM Users_games WHERE user_id={message.chat.id}")
+    e,word = cur.fetchone()
+    return word
+
 def get_key_words(message):
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
@@ -119,7 +126,6 @@ Name: {j[0]}
 Ссылка: {j[2]} 
             '''
     return results
-
 
 def check_game_id(game):
     html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text
