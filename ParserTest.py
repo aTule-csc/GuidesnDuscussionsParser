@@ -152,7 +152,14 @@ def get_game_id(id):
     test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
     e,testvalue = test.fetchone()
     return testvalue
-print(diss_sort_test())
+
+def get_key_word(id):
+    con = sqlite3.connect("users_games.db")
+    cur = con.cursor()
+    cur.execute(f"SELECT user_id,user_key_word FROM Users_games WHERE user_id={id}")
+    e,word = cur.fetchone()
+    return word
+print(get_key_word(id))
 
 #check_game_id(1)
 
