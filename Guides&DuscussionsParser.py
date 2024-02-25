@@ -125,8 +125,11 @@ def disc_parser_wtof(message):
 
 def disc_parser_wtof_results(message):
     number=message.text
-    number=int(number) #нужно доделать
-    print(number)
+    try:
+        number=int(number) #нужно доделать
+    except ValueError:
+        number = 1
+    # print(number)
 
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
