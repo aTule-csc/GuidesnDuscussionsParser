@@ -76,6 +76,8 @@ def disc_parse(message):
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить обсуждения?",reply_markup=markup)
     disc_parser_wof(message)
+    disc_parser_wtof(message)
+
 
 def guides_parse(message):
     if message.text=="Парсить руководства":
@@ -111,7 +113,20 @@ def word_change(message):
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
-        bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1))
+        remove = telebot.types.ReplyKeyboardRemove()
+        bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1),reply_markup=remove)
+
+def disc_parser_wtof(message):
+    if message.text=="Обсуждения с фильтром":
+        word = Defs.get_key_word(message)
+        remove = telebot.types.ReplyKeyboardRemove()
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отпарсить по данному ключевому слову?',reply_markup=remove)
+        bot.register_next_step_handler(msg,disc_parser_wtof_results)
+
+def disc_parser_wtof_results(message):
+    number=message.text
+    number=int(number) #нужно доделать
+    print(number)
 
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
@@ -121,7 +136,6 @@ def set_game_id(message):
     if message.text=="Добавить свою игру":
         bot.send_message(message.from_user.id,"Введи Steam ID" )
         bot.register_next_step_handler(message,game_add)
-
 
 def game_add(message):
     game_id = Defs.check_game_id(message.text)
@@ -171,6 +185,8 @@ def game_list(message):
         rows = [row1,row2,row3,row4,row5,row6,row7,row8,row9,row10]
         markup = telebot.types.InlineKeyboardMarkup(rows)
         bot.send_message(message.chat.id,"Test",reply_markup=markup)
+
+
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_data_handler(callback):
