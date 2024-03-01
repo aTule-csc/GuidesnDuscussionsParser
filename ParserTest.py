@@ -162,8 +162,14 @@ def get_key_word(id):
 print(get_key_word(id))
 
 #check_game_id(1)
+# def get_game_name_steamdb():
+#     game_id = 730
+#     html = requests.get(f"https://steamdb.info/app/{game_id}/").text
+#     soup = BeautifulSoup(html, 'html.parser') 
+#     hs = soup.find_all()
+#     return hs
 
-#print(guides_page_former(n))
+# print(get_game_name_steamdb())
 
 
 """

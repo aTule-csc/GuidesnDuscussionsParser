@@ -42,6 +42,15 @@ def get_key_words(message):
     print(return_value)
     return return_value
 
+
+# "<h1>You have been banned on SteamDB</h1>" Damn
+# def get_game_name_steamdb(message):
+#     game_id = get_game_id(message)
+#     html = requests.get(f"https://steamdb.info/app/{game_id}/charts/").text
+#     soup = BeautifulSoup(html, 'html.parser') 
+#     hs = soup.find_all("h1")
+#     return hs
+
 def disc_parser(message,page):
     game_id = get_game_id(message)
     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/?fp={page}").text
