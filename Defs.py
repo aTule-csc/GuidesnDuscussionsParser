@@ -10,40 +10,42 @@ n=3
 def entry_id_set(id):
     con = sqlite3.connect("users_games.db")
     test = con.cursor()
-    test.execute(f"SELECT * FROM Users_games WHERE user_id={id}")
+    test.execute(f"SELECT * FROM Users WHERE user_id={id}")
     testvalue = test.fetchall()
     test.close()
     if len(testvalue) == 0:
         cursor = con.cursor()
         ug = (id, 218620)
-        cursor.execute("INSERT INTO Users_games (user_id, user_game) VALUES (?, ?)",ug)
+        cursor.execute("INSERT INTO Users (user_id, user_game) VALUES (?, ?)",ug)
         con.commit()
         cursor.close()
 
 def get_game_id(message):
     con = sqlite3.connect("users_games.db")
     test = con.cursor()
-    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={message.chat.id}")
+    test.execute(f"SELECT user_id,user_game FROM Users WHERE user_id={message.chat.id}")
     e,testvalue = test.fetchone()
     return testvalue
 
 def get_key_word(message):
     con = sqlite3.connect("users_games.db")
     cur = con.cursor()
-    cur.execute(f"SELECT user_id,user_key_word FROM Users_games WHERE user_id={message.chat.id}")
+    cur.execute(f"SELECT user_id,user_key_word FROM Users WHERE user_id={message.chat.id}")
     e,word = cur.fetchone()
     return word
 
 def get_key_words(message):
+    return_value =[]
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
     cursor.execute(f"SELECT user_id,key_word FROM Key_Words Where user_id = {message.chat.id}")
-    e,return_value = cursor.fetchall() #e нужна чтобы обработать полученные данные в желаемом виде
-    print(return_value)
+    value = cursor.fetchall() #e нужна чтобы обработать полученные данные в желаемом виде, но вызывает баг при кол-ве слов > 2
+    for i in value:
+        return_value.append(i[1])
     return return_value
 
 
-# "<h1>You have been banned on SteamDB</h1>" Damn
+# "<h1>You have been banned on SteamDB</h1>" Damn :/
 # def get_game_name_steamdb(message):
 #     game_id = get_game_id(message)
 #     html = requests.get(f"https://steamdb.info/app/{game_id}/charts/").text
@@ -81,6 +83,61 @@ def disc_parser(message,page):
         posts.append((name, url,author,reply_count,lastpost))
     return posts
 
+# def disc_page_turner(message,n):
+#     #одна страница = 15 обсуждений
+#     results=''
+#     e=[]
+#     for i in range (1,n+1):
+#         results +=f"""
+# Страница {i}
+        
+#         """
+#         e=disc_parser(message,page)
+#         for j in e:
+#             results+=f"""
+# Topic : {j[0]}
+# URL: {j[1]}
+# Автор: {j[2]}
+# Кол-во записей: {j[3]}
+# Последнее сообщение: {j[4]}
+
+
+# """
+#     return results
+
+def disc_sort(message,word,page_number):
+    posts = disc_parser(message,page_number)
+    results = []
+    for i in posts:
+        line = i[0]
+        pattern = re.compile(word)
+        c=bool(pattern.search(line.lower()))
+        if c == True:
+            results.append(i)
+    return results
+
+def disc_page_turner_sort(message,n,word):
+    #одна страница = 15 обсуждений
+    results=''
+    e=[]
+    for i in range (1,n+1):
+        results +=f"""
+Страница {i}
+        
+        """
+        e=disc_sort(message,word,i)
+        for j in e:
+            results+=f"""
+Topic : {j[0]}
+URL: {j[1]}
+Автор: {j[2]}
+Кол-во записей: {j[3]}
+Последнее сообщение: {j[4]}
+
+
+"""
+    return results
+
 def guides_parser(message,page):
     game_id = get_game_id(message)
     html=requests.get(f"https://steamcommunity.com/app/{game_id}/guides/?searchText=&browsefilter=trend&browsesort=creationorder&requiredtags%5B0%5D=-1&p={page}").text
@@ -97,28 +154,6 @@ def guides_parser(message,page):
         guides.append((title, author, url, desc))
     
     return guides
-
-def disc_page_turner(message,n):
-    #одна страница = 15 обсуждений
-    results=''
-    e=[]
-    for i in range (1,n+1):
-        results +=f"""
-Страница {i}
-        
-        """
-        e=disc_parser(message,page)
-        for j in e:
-            results+=f"""
-Topic : {j[0]}
-URL: {j[1]}
-Автор: {j[2]}
-Кол-во записей: {j[3]}
-Последнее сообщение: {j[4]}
-
-
-"""
-    return results
 
 def guides_page_turner(message,n):
     #одна страница = 30 гайдов

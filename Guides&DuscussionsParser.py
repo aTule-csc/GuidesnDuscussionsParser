@@ -125,11 +125,12 @@ def disc_parser_wtof(message):
 
 def disc_parser_wtof_results(message):
     number=message.text
+    word = Defs.get_key_word(message)
     try:
-        number=int(number) #нужно доделать
+        number=int(number)
     except ValueError:
         number = 1
-    # print(number)
+    bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
 
 def guides_parser_wof(message):
     if message.text=="Без фильтров":
@@ -147,7 +148,7 @@ def game_add(message):
     else:
         con = sqlite3.connect("users_games.db")
         cursor = con.cursor()
-        cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
+        cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
         con.commit()
         cursor.close()
         bot.send_message(message.from_user.id, "Замена произведена")
@@ -189,15 +190,13 @@ def game_list(message):
         markup = telebot.types.InlineKeyboardMarkup(rows)
         bot.send_message(message.chat.id,"Test",reply_markup=markup)
 
-
-
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_data_handler(callback):
     if callback.data == games_dic.keys():
         game_id = games_dic[callback.data]
         con = sqlite3.connect("users_games.db")
         cursor = con.cursor()
-        cursor.execute(f"UPDATE Users_games SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
+        cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
         con.commit()
         cursor.close()
         bot.send_message(callback.message.chat.id, "Замена произведена")
@@ -290,7 +289,11 @@ def word_pick(message):
             rows = [row1,row2,row3]
             markup = telebot.types.InlineKeyboardMarkup(rows)
             bot.send_message(message.chat.id,"Test",reply_markup=markup)
-
+@bot.callback_query_handler(func=lambda callback: True)
+def callback_data_handler1(callback):
+    if callback.data == words_dic.keys:
+        word_id = words_dic[callback.data]
+        con = sqlite3.connect("Key_Words.db")#нужно доделать 
 bot.infinity_polling()
 
 

@@ -44,13 +44,11 @@ def disc_parser(game_id,page):
     return posts
 
 def diss_sort_test():
-    a = 'payday'
-    b = guides_parser(game_id,page)
-    #def sort(a,b):
+    a = 'game'
+    b = disc_parser(game_id,page)
     results = []
     for i in b:
         line = i[0]
-        # print(type(line))
         pattern = re.compile(a)
         c=bool(pattern.search(line.lower()))
         if c == True:
@@ -138,29 +136,32 @@ def game_changer():
 
 id = 6029053748
 
-con = sqlite3.connect("users_games.db")
-test = con.cursor()
-test.execute(f"SELECT * FROM Users_games WHERE user_id=1")
-testvalue = test.fetchall()
-if len(testvalue) == 0:
-    print("denied")
-        
 
 def get_game_id(id):
     con = sqlite3.connect("users_games.db")
     test = con.cursor()
-    test.execute(f"SELECT user_id,user_game FROM Users_games WHERE user_id={id}")
+    test.execute(f"SELECT user_id,user_game FROM Users WHERE user_id={id}")
     e,testvalue = test.fetchone()
     return testvalue
 
 def get_key_word(id):
     con = sqlite3.connect("users_games.db")
     cur = con.cursor()
-    cur.execute(f"SELECT user_id,user_key_word FROM Users_games WHERE user_id={id}")
+    cur.execute(f"SELECT user_id,user_key_word FROM Users WHERE user_id={id}")
     e,word = cur.fetchone()
     return word
-print(get_key_word(id))
 
+def get_key_words(id):
+    con = sqlite3.connect("Key_Words.db")
+    return_value =[]
+    cursor = con.cursor()
+    cursor.execute(f"SELECT user_id,key_word FROM Key_Words Where user_id = {id}")
+    value = cursor.fetchall() #e нужна чтобы обработать полученные данные в желаемом виде
+    for i in value:
+        return_value.append(i[1])
+    print(return_value)
+    return return_value
+get_key_words(id)
 #check_game_id(1)
 # def get_game_name_steamdb():
 #     game_id = 730
