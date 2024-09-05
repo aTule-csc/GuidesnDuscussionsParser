@@ -88,6 +88,7 @@ def guides_parse(message):
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
     guides_parser_wof(message)
+    guides_parser_wtof(message)
 
 def game_list_change(message):
     if message.text=="Изменить список игр":
@@ -135,6 +136,21 @@ def disc_parser_wtof_results(message):
 def guides_parser_wof(message):
     if message.text=="Первая страница руководств":
         bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1))
+def guides_parser_wtof(message):
+    if message.text=="Руководства с фильтром":
+        word = Defs.get_key_word(message)
+        remove = telebot.types.ReplyKeyboardRemove()
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отпарсить по данному ключевому слову?',reply_markup=remove)
+        bot.register_next_step_handler(msg,guides_parser_wtof_results)
+
+def guides_parser_wtof_results(message):
+    number=message.text
+    word = Defs.get_key_word(message)
+    try:
+        number=int(number)
+    except ValueError:
+        number = 1
+    bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
 
 def set_game_id(message):
     if message.text=="Добавить свою игру":

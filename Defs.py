@@ -181,14 +181,16 @@ def guides_sort(message,word,page_number):
             results.append(i)
     return results
 
-def guides_page_turner_sort(message,n):
+def guides_page_turner_sort(message,n,word):
         #одна страница = 30 гайдов максимум, что скорее всего вызовет ошибку
     e=[]
     results=""
     for i in range (1,n+1):
         results+=f"""
-Страница {i}"""
-        e=guides_parser(message,i)
+Страница {i}
+
+        """
+        e=guides_sort(message,word,i)
         for j in e:
             results+=f'''
 Title: {j[0]}
