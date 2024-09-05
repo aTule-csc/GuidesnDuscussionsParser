@@ -82,8 +82,8 @@ def disc_parse(message):
 def guides_parse(message):
     if message.text=="Парсить руководства":
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1=types.KeyboardButton("Без фильтров")
-        item2=types.KeyboardButton("С фильтром")
+        item1=types.KeyboardButton("Первая страница руководств")
+        item2=types.KeyboardButton("Руководства с фильтром")
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id,"Как именно парсить руководства?",reply_markup=markup)
@@ -133,7 +133,7 @@ def disc_parser_wtof_results(message):
     bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
 
 def guides_parser_wof(message):
-    if message.text=="Без фильтров":
+    if message.text=="Первая страница руководств":
         bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1))
 
 def set_game_id(message):

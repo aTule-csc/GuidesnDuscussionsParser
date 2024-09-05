@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 import sqlite3
 
 # game_id = 218620
-page = 1
-n=3
+# page = 1
+# n=3
 def entry_id_set(id):
     con = sqlite3.connect("users_games.db")
     test = con.cursor()
@@ -83,27 +83,27 @@ def disc_parser(message,page):
         posts.append((name, url,author,reply_count,lastpost))
     return posts
 
-# def disc_page_turner(message,n):
-#     #одна страница = 15 обсуждений
-#     results=''
-#     e=[]
-#     for i in range (1,n+1):
-#         results +=f"""
-# Страница {i}
+def disc_page_turner(message,n):
+    #одна страница = 15 обсуждений
+    results=''
+    e=[]
+    for i in range (1,n+1):
+        results +=f"""
+Страница {i}
         
-#         """
-#         e=disc_parser(message,page)
-#         for j in e:
-#             results+=f"""
-# Topic : {j[0]}
-# URL: {j[1]}
-# Автор: {j[2]}
-# Кол-во записей: {j[3]}
-# Последнее сообщение: {j[4]}
+        """
+        e=disc_parser(message,i)
+        for j in e:
+            results+=f"""
+Topic : {j[0]}
+URL: {j[1]}
+Автор: {j[2]}
+Кол-во записей: {j[3]}
+Последнее сообщение: {j[4]}
 
 
-# """
-#     return results
+"""
+    return results
 
 def disc_sort(message,word,page_number):
     posts = disc_parser(message,page_number)
@@ -117,7 +117,7 @@ def disc_sort(message,word,page_number):
     return results
 
 def disc_page_turner_sort(message,n,word):
-    #одна страница = 15 обсуждений
+    #одна страница = 15 обсуждений максимум
     results=''
     e=[]
     for i in range (1,n+1):
@@ -157,7 +157,6 @@ def guides_parser(message,page):
 
 def guides_page_turner(message,n):
     #одна страница = 30 гайдов
-    #выдаёт ошибку из-за слишком длиного сообщения
     e=[]
     results=""
     for i in range (1,n+1):
@@ -166,13 +165,42 @@ def guides_page_turner(message,n):
         e=guides_parser(message,i)
         for j in e:
             results+=f'''
-Name: {j[0]}
-Ссылка: {j[2]} 
+Title: {j[0]}
+URL: {j[2]} 
+            '''
+    return results
+
+def guides_sort(message,word,page_number):
+    posts = guides_parser(message,page_number)
+    results = []
+    for i in posts:
+        line = i[0]
+        pattern = re.compile(word)
+        c=bool(pattern.search(line.lower()))
+        if c == True:
+            results.append(i)
+    return results
+
+def guides_page_turner_sort(message,n):
+        #одна страница = 30 гайдов максимум, что скорее всего вызовет ошибку
+    e=[]
+    results=""
+    for i in range (1,n+1):
+        results+=f"""
+Страница {i}"""
+        e=guides_parser(message,i)
+        for j in e:
+            results+=f'''
+Title: {j[0]}
+Автор: {j[1]}
+URL: {j[2]} 
+Описание: {j[3]}
             '''
     return results
 
 def check_game_id(game):
-    html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/?fp={page}").text
+
+    html = requests.get(f"https://steamcommunity.com/app/{game}/discussions/").text
     soup = BeautifulSoup(html, 'html.parser')
     divs = bool(soup.find("div", class_ = 'forum_topic'))
     if divs is True:
