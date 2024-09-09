@@ -142,8 +142,9 @@ def disc_parser_wof(message):
 def disc_parser_wtof(message):
     if message.text=="Обсуждения с фильтром":
         word = Defs.get_key_word(message)
+        game_id = int(Defs.get_game_id(message))
         remove = telebot.types.ReplyKeyboardRemove()
-        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}, Выбранная игра (её id) : {games_id_name.get(game_id,game_id)}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
         bot.register_next_step_handler(msg,disc_parser_wtof_results)
 
 def disc_parser_wtof_results(message):
@@ -151,13 +152,14 @@ def disc_parser_wtof_results(message):
     word = Defs.get_key_word(message)
     try:
         number=int(number)
-    except ValueError:
-        number = 1
-    limit = len(Defs.disc_page_turner_sort(message,number,word))
-    if limit <= 4096:
-        bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
+    except TypeError:
+        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
     else:
-        bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
+        limit = len(Defs.disc_page_turner_sort(message,number,word))
+        if limit <= 4096:
+            bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
+        else:
+            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
 
 
 def guides_parser_wof(message):
@@ -175,13 +177,14 @@ def guides_parser_wtof_results(message):
     word = Defs.get_key_word(message)
     try:
         number=int(number)
-    except ValueError:
-        number = 1
-    limit = Defs.guides_page_turner_sort(message,number,word)
-    if limit <= 4096:
-        bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
+    except TypeError:
+        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
     else:
-        bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
+        limit = Defs.guides_page_turner_sort(message,number,word)
+        if limit <= 4096:
+            bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
+        else:
+            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
 
 def set_game_id(message):
     if message.text=="Добавить свою игру":
