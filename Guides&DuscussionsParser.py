@@ -32,7 +32,29 @@ games_dic={"list1" : 1172470,
     'list18' : 440,
     'list19' : 1237970,
     'list20' : 230410}
-
+games_id_name ={
+    1172470 :"Apex Legends",
+    870780 : "Control Ultimate Edition",
+    381210 : "Dead by Daylight",
+    548430 : "Deep Rock Galactic",
+    217980 : "Dishonored RHCP (СНГ)",
+    782330 : "Dishonored 2",
+    403640 : "DOOM Eternal", 
+    239140 :"Dying Light",
+    534380 : "Dying Light 2",
+    70 : "Half Life",
+    220 : "Half Life 2",
+    232090 : "Killing Floor 2",
+    17410 : "Mirror's Edge",
+    1233570 : "Mirror's Edge™ Catalyst",
+    218620 : "Payday 2",
+    1272080 :"Payday 3",
+    620 : "Portal 2",
+    105600 : "Terraria",
+    440 : "Team Fortress 2 (2007)",
+    1237970 : "Titanfall 2 (2016)",
+    230410 : "Warframe" 
+}
 words_dic ={"word1":0,
             "word2":1,
             "word3":2,
@@ -121,7 +143,7 @@ def disc_parser_wtof(message):
     if message.text=="Обсуждения с фильтром":
         word = Defs.get_key_word(message)
         remove = telebot.types.ReplyKeyboardRemove()
-        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отпарсить по данному ключевому слову?',reply_markup=remove)
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
         bot.register_next_step_handler(msg,disc_parser_wtof_results)
 
 def disc_parser_wtof_results(message):
@@ -131,7 +153,12 @@ def disc_parser_wtof_results(message):
         number=int(number)
     except ValueError:
         number = 1
-    bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
+    limit = len(Defs.disc_page_turner_sort(message,number,word))
+    if limit <= 4096:
+        bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
+    else:
+        bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
+
 
 def guides_parser_wof(message):
     if message.text=="Первая страница руководств":
@@ -140,7 +167,7 @@ def guides_parser_wtof(message):
     if message.text=="Руководства с фильтром":
         word = Defs.get_key_word(message)
         remove = telebot.types.ReplyKeyboardRemove()
-        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отпарсить по данному ключевому слову?',reply_markup=remove)
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
         bot.register_next_step_handler(msg,guides_parser_wtof_results)
 
 def guides_parser_wtof_results(message):
@@ -150,7 +177,11 @@ def guides_parser_wtof_results(message):
         number=int(number)
     except ValueError:
         number = 1
-    bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
+    limit = Defs.guides_page_turner_sort(message,number,word)
+    if limit <= 4096:
+        bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
+    else:
+        bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
 
 def set_game_id(message):
     if message.text=="Добавить свою игру":
@@ -167,7 +198,7 @@ def game_add(message):
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
         con.commit()
         cursor.close()
-        bot.send_message(message.from_user.id, "Замена произведена")
+        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_dic.get(game_id)}")
 
 def game_list(message):
     if message.text=="Выбрать игру из списка":
@@ -208,16 +239,26 @@ def game_list(message):
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_data_handler(callback):
-    if callback.data == games_dic.keys():
+    if callback.data in games_dic.keys():
         game_id = games_dic[callback.data]
         con = sqlite3.connect("users_games.db")
         cursor = con.cursor()
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
         con.commit()
         cursor.close()
-        bot.send_message(callback.message.chat.id, "Замена произведена")
-    #if callback.data == words_dic.keys():
-        #callback.message.chat.id
+        bot.send_message(callback.message.chat.id, f"Замена произведена, новая игра {games_dic.get(game_id,game_id)}")
+    if callback.data in words_dic.keys():
+        word_id = words_dic[callback.data]
+        word_tuple = Defs.get_key_words(callback.message)
+        word_list =list(word_tuple)
+        if len(word_list) > word_id:
+            con = sqlite3.connect("users_games.db")
+            cursor = con.cursor()
+            cursor.execute(f"UPDATE Users SET user_key_word = {word_list[word_id]} WHERE user_id = {callback.message.chat.id}")
+            con.commit()
+            cursor.close()
+            bot.send_message(callback.message.chat.id, f"Замена произведена, новое ключевое слово {word_list[word_id]}")
+
 
 def word_list_change(message):
     if message.text=="Изменить список":
@@ -291,7 +332,7 @@ def word_pick(message):
             word_list =list(word_tuple)
             print(word_list)
             while len(word_list) < 6:
-                word_list.append("---")
+                word_list.append('"пусто"')
             markup = types.InlineKeyboardMarkup()
             item1=types.InlineKeyboardButton(f"{word_list[0]}",callback_data='word1')
             item2=types.InlineKeyboardButton(f"{word_list[1]}",callback_data='word2')
@@ -305,11 +346,14 @@ def word_pick(message):
             rows = [row1,row2,row3]
             markup = telebot.types.InlineKeyboardMarkup(rows)
             bot.send_message(message.chat.id,"Test",reply_markup=markup)
-@bot.callback_query_handler(func=lambda callback: True)
-def callback_data_handler1(callback):
-    if callback.data == words_dic.keys:
-        word_id = words_dic[callback.data]
-        con = sqlite3.connect("Key_Words.db")#нужно доделать 
+
+    # word_id = words_dic[callback.data]
+    # if callback.data in words_dic.keys:
+    #     word_id = words_dic[callback.data]
+    #     words_list = Defs.get_key_words(callback.message)
+    #     bot.send_message(callback.message.chat.id, f"id={word_id}")
+    #     con = sqlite3.connect("Key_Words.db")#нужно доделать
+    #     cursor = con.cursor()
 bot.infinity_polling()
 
 

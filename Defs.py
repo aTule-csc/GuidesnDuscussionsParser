@@ -31,7 +31,7 @@ def get_key_word(message):
     con = sqlite3.connect("users_games.db")
     cur = con.cursor()
     cur.execute(f"SELECT user_id,user_key_word FROM Users WHERE user_id={message.chat.id}")
-    e,word = cur.fetchone()
+    e,word = cur.fetchone() #e нужна чтобы обработать полученные данные в желаемом виде, но вызывает баг при кол-ве слов > 2
     return word
 
 def get_key_words(message):
@@ -39,7 +39,7 @@ def get_key_words(message):
     con = sqlite3.connect("Key_Words.db")
     cursor = con.cursor()
     cursor.execute(f"SELECT user_id,key_word FROM Key_Words Where user_id = {message.chat.id}")
-    value = cursor.fetchall() #e нужна чтобы обработать полученные данные в желаемом виде, но вызывает баг при кол-ве слов > 2
+    value = cursor.fetchall()
     for i in value:
         return_value.append(i[1])
     return return_value
