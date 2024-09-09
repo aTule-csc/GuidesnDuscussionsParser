@@ -53,7 +53,9 @@ games_id_name ={
     105600 : "Terraria",
     440 : "Team Fortress 2 (2007)",
     1237970 : "Titanfall 2 (2016)",
-    230410 : "Warframe" 
+    230410 : "Warframe",
+    730 : "Counter-Strike 2",
+    570 : "Dota 2" 
 }
 words_dic ={"word1":0,
             "word2":1,
@@ -70,7 +72,7 @@ def start(message):
     bot.send_message(message.chat.id,"ae",reply_markup=markup)
 @bot.message_handler(content_types='text')
 def main(message):
-    if message.text=="Начать":
+    if message.text=="Начать" or "В начало":
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
         item1=types.KeyboardButton("Парсить обсуждения")
         item2=types.KeyboardButton("Парсить руководства")
@@ -82,13 +84,12 @@ def main(message):
         markup.add(item4)
         User_id = message.from_user.id
         Defs.entry_id_set(User_id)
-        bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup)
-        
+        bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup) 
     disc_parse(message)
     guides_parse(message)
     game_list_change(message)
     word_change(message)
-
+    
 def disc_parse(message):
     if message.text=="Парсить обсуждения":
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -136,8 +137,11 @@ def word_change(message):
 
 def disc_parser_wof(message):
     if message.text=="Первая страница обсуждений":
-        remove = telebot.types.ReplyKeyboardRemove()
-        bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1),reply_markup=remove)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1=types.KeyboardButton("В начало")
+        markup.add(item1)
+        bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1),reply_markup=markup)
+
 
 def disc_parser_wtof(message):
     if message.text=="Обсуждения с фильтром":
@@ -148,6 +152,7 @@ def disc_parser_wtof(message):
         bot.register_next_step_handler(msg,disc_parser_wtof_results)
 
 def disc_parser_wtof_results(message):
+    
     number=message.text
     word = Defs.get_key_word(message)
     try:
