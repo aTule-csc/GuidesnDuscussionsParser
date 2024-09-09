@@ -198,7 +198,7 @@ def game_add(message):
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
         con.commit()
         cursor.close()
-        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_dic.get(game_id)}")
+        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_id_name.get(int(game_id),game_id)}")
 
 def game_list(message):
     if message.text=="Выбрать игру из списка":
@@ -246,7 +246,7 @@ def callback_data_handler(callback):
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
         con.commit()
         cursor.close()
-        bot.send_message(callback.message.chat.id, f"Замена произведена, новая игра {games_dic.get(game_id,game_id)}")
+        bot.send_message(callback.message.chat.id, f"Замена произведена, новая игра {games_id_name.get(game_id,game_id)}")
     if callback.data in words_dic.keys():
         word_id = words_dic[callback.data]
         word_tuple = Defs.get_key_words(callback.message)
