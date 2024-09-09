@@ -72,7 +72,7 @@ def start(message):
     bot.send_message(message.chat.id,"ae",reply_markup=markup)
 @bot.message_handler(content_types='text')
 def main(message):
-    if message.text=="Начать" or "В начало":
+    if message.text=="Начать" or message.text=="В начало":
         markup=types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
         item1=types.KeyboardButton("Парсить обсуждения")
         item2=types.KeyboardButton("Парсить руководства")
@@ -100,7 +100,6 @@ def disc_parse(message):
         bot.send_message(message.chat.id,"Как именно парсить обсуждения?",reply_markup=markup)
     disc_parser_wof(message)
     disc_parser_wtof(message)
-
 
 def guides_parse(message):
     if message.text=="Парсить руководства":
@@ -142,7 +141,6 @@ def disc_parser_wof(message):
         markup.add(item1)
         bot.send_message(message.from_user.id,Defs.disc_page_turner(message,1),reply_markup=markup)
 
-
 def disc_parser_wtof(message):
     if message.text=="Обсуждения с фильтром":
         word = Defs.get_key_word(message)
@@ -157,7 +155,7 @@ def disc_parser_wtof_results(message):
     word = Defs.get_key_word(message)
     try:
         number=int(number)
-    except TypeError:
+    except (ValueError,TypeError):
         bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
     else:
         limit = len(Defs.disc_page_turner_sort(message,number,word))
@@ -170,6 +168,7 @@ def disc_parser_wtof_results(message):
 def guides_parser_wof(message):
     if message.text=="Первая страница руководств":
         bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1))
+
 def guides_parser_wtof(message):
     if message.text=="Руководства с фильтром":
         word = Defs.get_key_word(message)
@@ -182,7 +181,7 @@ def guides_parser_wtof_results(message):
     word = Defs.get_key_word(message)
     try:
         number=int(number)
-    except TypeError:
+    except (ValueError,TypeError):
         bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
     else:
         limit = Defs.guides_page_turner_sort(message,number,word)
