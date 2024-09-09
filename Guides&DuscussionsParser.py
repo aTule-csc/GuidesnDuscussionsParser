@@ -150,30 +150,50 @@ def disc_parser_wtof(message):
         bot.register_next_step_handler(msg,disc_parser_wtof_results)
 
 def disc_parser_wtof_results(message):
-    
-    number=message.text
+    number = message.text
     word = Defs.get_key_word(message)
     try:
         number=int(number)
     except (ValueError,TypeError):
-        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1 = types.KeyboardButton("Обсуждения с фильтром")
+        item2 = types.KeyboardButton("В начало")
+        markup.add(item1)
+        markup.add(item2)
+        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа",reply_markup=markup)
+
     else:
         limit = len(Defs.disc_page_turner_sort(message,number,word))
         if limit <= 4096:
-            bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word))
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+            item1 = types.KeyboardButton("Обсуждения с фильтром")
+            item2 = types.KeyboardButton("В начало")
+            markup.add(item1)
+            markup.add(item2)
+            bot.send_message(message.from_user.id,Defs.disc_page_turner_sort(message,number,word),reply_markup=markup)
         else:
-            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+            item1 = types.KeyboardButton("Обсуждения с фильтром")
+            item2=types.KeyboardButton("Выбрать слово из списка")
+            item3 = types.KeyboardButton("В начало")
+            markup.add(item1,item2)
+            markup.add(item3)
+            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово",reply_markup=markup)
 
 
 def guides_parser_wof(message):
     if message.text=="Первая страница руководств":
-        bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1))
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1=types.KeyboardButton("В начало")
+        markup.add(item1)
+        bot.send_message(message.from_user.id,Defs.guides_page_turner(message,1),reply_markup=markup)
 
 def guides_parser_wtof(message):
     if message.text=="Руководства с фильтром":
         word = Defs.get_key_word(message)
+        game_id = int(Defs.get_game_id(message))
         remove = telebot.types.ReplyKeyboardRemove()
-        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
+        msg=bot.send_message(message.chat.id, f'Ваше ключевое слово : {word}, Выбранная игра (её id) : {games_id_name.get(game_id,game_id)}. Введите номер кол-ва страниц которое желаете отсортировать по данному ключевому слову?',reply_markup=remove)
         bot.register_next_step_handler(msg,guides_parser_wtof_results)
 
 def guides_parser_wtof_results(message):
@@ -182,13 +202,29 @@ def guides_parser_wtof_results(message):
     try:
         number=int(number)
     except (ValueError,TypeError):
-        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1 = types.KeyboardButton("Руководства с фильтром")
+        item2 = types.KeyboardButton("В начало")
+        markup.add(item1)
+        markup.add(item2)
+        bot.send_message(message.from_user.id,f"Никаких {number}, вводи нормальные числа",reply_markup=markup)
     else:
-        limit = Defs.guides_page_turner_sort(message,number,word)
+        limit = len(Defs.guides_page_turner_sort(message,number,word))
         if limit <= 4096:
-            bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word))
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+            item1 = types.KeyboardButton("Руководства с фильтром")
+            item2=types.KeyboardButton("В начало")
+            markup.add(item1)
+            markup.add(item2)
+            bot.send_message(message.from_user.id,Defs.guides_page_turner_sort(message,number,word),reply_markup=markup)
         else:
-            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово")
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+            item1 = types.KeyboardButton("Руководства с фильтром")
+            item2=types.KeyboardButton("Выбрать слово из списка")
+            item3 = types.KeyboardButton("В начало")
+            markup.add(item1,item2)
+            markup.add(item3)
+            bot.send_message(message.from_user.id,f"Длина вашего результата поиска составила {limit} символа(ов) из 4096 допустимых Телеграммом, уменьшите круг поиска или смените ключевое слово",reply_markup=markup)
 
 def set_game_id(message):
     if message.text=="Добавить свою игру":
@@ -261,7 +297,8 @@ def callback_data_handler(callback):
         if len(word_list) > word_id:
             con = sqlite3.connect("users_games.db")
             cursor = con.cursor()
-            cursor.execute(f"UPDATE Users SET user_key_word = {word_list[word_id]} WHERE user_id = {callback.message.chat.id}")
+            insert_values =(f"{word_list[word_id]}",callback.message.chat.id)
+            cursor.execute(f"UPDATE Users SET user_key_word = ? WHERE user_id = ?" ,insert_values)
             con.commit()
             cursor.close()
             bot.send_message(callback.message.chat.id, f"Замена произведена, новое ключевое слово {word_list[word_id]}")
@@ -273,6 +310,7 @@ def word_list_change(message):
         item1=types.KeyboardButton("Добавить слово")
         item2=types.KeyboardButton("Изменить слово")
         item3=types.KeyboardButton("Удалить слово")
+        item4 = types.KeyboardButton("В начало")
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
@@ -280,13 +318,13 @@ def word_list_change(message):
     word_add_replace_remove(message)
 
 def word_add_replace_remove(message):
+    words_list = Defs.get_key_words(message)
     if message.text == "Добавить слово":
         bot.send_message(message.chat.id,"Введите слово которое хотите добавить")
         bot.register_next_step_handler(message,word_list_add)
     if message.text == "Изменить слово":
         bot.send_message(message.chat.id,f"Введите слово которое хотите изменить, список ваших слов :{words_list}")
     if message.text == "Удалить слово":
-        words_list = Defs.get_key_words(message)
         bot.send_message(message.chat.id,f"Введите слово которое хотите удалить, список ваших слов :{words_list}")
         bot.register_next_step_handler(message,word_list_remove)
 
@@ -298,12 +336,13 @@ def word_list_add(message):
     if word in words_list:
         bot.send_message(message.chat.id,"Данное слово существует в вашем списке, добавление отменено")
     else:
-        insert_values = (message.chat.id, word)
+        insert_values = (message.chat.id.lower(), word)
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
         cursor.execute("INSERT INTO Key_Words (user_id, key_word) VALUES (?, ?)",insert_values)
         con.commit()
         cursor.close()
+        con.close()
         bot.send_message(message.chat.id,"Добавление произведено")
 
 def word_list_replace(message):
@@ -312,22 +351,26 @@ def word_list_replace(message):
     if word in words_list:
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
-        cursor.execute(f"UPDATE FROM Key_Words WHERE key_word = {word} and user_id={message.chat.id}")
+        insert_values = (f"{word}",message.chat.id)
+        cursor.execute(f"UPDATE FROM Key_Words WHERE key_word = ? and user_id = ?",insert_values)
         con.commit()
         cursor.close()
+        con.close()
         bot.send_message(message.chat.id,"Замена произведено")
     else:
         bot.send_message(message.chat.id,"Данное слово не существует в вашем списке, замена отменена")
 
 def word_list_remove(message):
-    word = message.text
+    word = str(message.text)
     words_list = Defs.get_key_words(message)
     if word in words_list:
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
-        cursor.execute(f"DELETE FROM Key_Words WHERE key_word = {word} and user_id={message.chat.id}")
+        insert_values = (f"{word}",message.chat.id)
+        cursor.execute(f"DELETE FROM Key_Words WHERE key_word = ? and user_id = ? ", insert_values)
         con.commit()
         cursor.close()
+        con.close()
         bot.send_message(message.chat.id,"Удаление произведено")
     else:
         bot.send_message(message.chat.id,"Данное слово не существует в вашем списке, удаление отменено")
