@@ -314,6 +314,7 @@ def word_list_change(message):
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
+        markup.add(item4)
         bot.send_message(message.chat.id,"Как именно изменить список?",reply_markup=markup)
     word_add_replace_remove(message)
 
@@ -324,6 +325,7 @@ def word_add_replace_remove(message):
         bot.register_next_step_handler(message,word_list_add)
     if message.text == "Изменить слово":
         bot.send_message(message.chat.id,f"Введите слово которое хотите изменить, список ваших слов :{words_list}")
+        bot.register_next_step_handler(message,word_list_replace_setup)
     if message.text == "Удалить слово":
         bot.send_message(message.chat.id,f"Введите слово которое хотите удалить, список ваших слов :{words_list}")
         bot.register_next_step_handler(message,word_list_remove)
@@ -345,14 +347,19 @@ def word_list_add(message):
         con.close()
         bot.send_message(message.chat.id,"Добавление произведено")
 
-def word_list_replace(message):
+def word_list_replace_setup(message):
+    word_to_change = message.text
+    bot.send_message(message.from_user.id,"Введите слово на которое хотите изменить" )
+    bot.register_next_step_handler(message,word_list_replace)
+
+def word_list_replace(message,word_to_change):
     word = message.text
     words_list = Defs.get_key_words(message)
     if word in words_list:
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
-        insert_values = (f"{word}",message.chat.id)
-        cursor.execute(f"UPDATE FROM Key_Words WHERE key_word = ? and user_id = ?",insert_values)
+        insert_values = (f"{word}",f"{word_to_change}",message.chat.id)
+        cursor.execute(f"UPDATE Key_Words SET key_word = ? FROM Key_Words WHERE key_word = ? and user_id = ?",insert_values)
         con.commit()
         cursor.close()
         con.close()
