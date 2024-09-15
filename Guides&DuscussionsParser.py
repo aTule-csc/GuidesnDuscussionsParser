@@ -289,7 +289,11 @@ def callback_data_handler(callback):
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {callback.message.chat.id}")
         con.commit()
         cursor.close()
-        bot.send_message(callback.message.chat.id, f"Замена произведена, новая игра {games_id_name.get(game_id,game_id)}")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1 = types.KeyboardButton("В начало")
+        markup.add(item1)
+        bot.send_message(callback.message.chat.id, f"Замена произведена, новая игра {games_id_name.get(game_id,game_id)}",reply_markup=markup)
+
     if callback.data in words_dic.keys():
         word_id = words_dic[callback.data]
         word_tuple = Defs.get_key_words(callback.message)
