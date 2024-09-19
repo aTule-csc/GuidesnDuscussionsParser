@@ -241,7 +241,10 @@ def game_add(message):
         cursor.execute(f"UPDATE Users SET user_game = {game_id} WHERE user_id = {message.from_user.id}")
         con.commit()
         cursor.close()
-        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_id_name.get(int(game_id),game_id)}")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+        item1=types.KeyboardButton("В начало")
+        markup.add(item1)
+        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_id_name.get(int(game_id),game_id)}",reply_markup=markup)
 
 def game_list(message):
     if message.text=="Выбрать игру из списка":
@@ -305,7 +308,10 @@ def callback_data_handler(callback):
             cursor.execute(f"UPDATE Users SET user_key_word = ? WHERE user_id = ?" ,insert_values)
             con.commit()
             cursor.close()
-            bot.send_message(callback.message.chat.id, f"Замена произведена, новое ключевое слово {word_list[word_id]}")
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
+            item1 = types.KeyboardButton("В начало")
+            markup.add(item1)
+            bot.send_message(callback.message.chat.id, f"Замена произведена, новое ключевое слово {word_list[word_id]}",reply_markup=markup)
 
 
 def word_list_change(message):
@@ -325,7 +331,7 @@ def word_list_change(message):
 def word_add_replace_remove(message):
     words_list = Defs.get_key_words(message)
     if message.text == "Добавить слово":
-        bot.send_message(message.chat.id,"Введите слово которое хотите добавить")
+        bot.send_message(message.chat.id,"Введите слово которое хотите добавить, учтите что слово должно состоять только из строчных букв")
         bot.register_next_step_handler(message,word_list_add)
     if message.text == "Изменить слово":
         bot.send_message(message.chat.id,f"Введите слово которое хотите изменить, список ваших слов :{words_list}")
@@ -336,34 +342,36 @@ def word_add_replace_remove(message):
 
 def word_list_add(message):
     word = message.text
+    word = word.lower()
     words_list = Defs.get_key_words(message)
     if len(words_list) > 5:
         bot.send_message(message.chat.id,"Лимит слов превышен, добавление невозможно")
     if word in words_list:
         bot.send_message(message.chat.id,"Данное слово существует в вашем списке, добавление отменено")
     else:
-        insert_values = (message.chat.id.lower(), word)
+        insert_values = (message.chat.id, word)
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
         cursor.execute("INSERT INTO Key_Words (user_id, key_word) VALUES (?, ?)",insert_values)
         con.commit()
         cursor.close()
         con.close()
-        bot.send_message(message.chat.id,"Добавление произведено")
+        bot.send_message(message.chat.id,f"Добавление произведено, новое слово в списке {word}")
 
 def word_list_replace_setup(message):
     word_to_change = message.text
     bot.send_message(message.from_user.id,"Введите слово на которое хотите изменить" )
-    bot.register_next_step_handler(message,word_list_replace)
+    bot.register_next_step_handler(message,word_list_replace,word_to_change)
 
 def word_list_replace(message,word_to_change):
     word = message.text
+    print(word,word_to_change,message.chat.id)
     words_list = Defs.get_key_words(message)
-    if word in words_list:
+    if word_to_change in words_list:
         con = sqlite3.connect("Key_Words.db")
         cursor = con.cursor()
         insert_values = (f"{word}",f"{word_to_change}",message.chat.id)
-        cursor.execute(f"UPDATE Key_Words SET key_word = ? FROM Key_Words WHERE key_word = ? and user_id = ?",insert_values)
+        cursor.execute(f"UPDATE Key_Words SET key_word = ? WHERE key_word = ? AND user_id = ?",insert_values)
         con.commit()
         cursor.close()
         con.close()
@@ -406,7 +414,7 @@ def word_pick(message):
             row3 = [item5,item6]
             rows = [row1,row2,row3]
             markup = telebot.types.InlineKeyboardMarkup(rows)
-            bot.send_message(message.chat.id,"Test",reply_markup=markup)
+            bot.send_message(message.chat.id,'Нажмите на кнопку чтобы выбрать слово из списка. Начатие на "пусто" ни к чему не приведёт',reply_markup=markup)
 
     # word_id = words_dic[callback.data]
     # if callback.data in words_dic.keys:
