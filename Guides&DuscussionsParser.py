@@ -69,7 +69,7 @@ def start(message):
     markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1=types.KeyboardButton("Начать")
     markup.add(item1)
-    bot.send_message(message.chat.id,"ae",reply_markup=markup)
+    bot.send_message(message.chat.id,"Нажмите кнопку внизу экрана для начала работы",reply_markup=markup)
 @bot.message_handler(content_types='text')
 def main(message):
     if message.text=="Начать" or message.text=="В начало":
@@ -84,7 +84,7 @@ def main(message):
         markup.add(item4)
         User_id = message.from_user.id
         Defs.entry_id_set(User_id)
-        bot.send_message(message.chat.id,"What do i do lord?",reply_markup=markup) 
+        bot.send_message(message.chat.id,"Что хотите делать?",reply_markup=markup) 
     disc_parse(message)
     guides_parse(message)
     game_list_change(message)
