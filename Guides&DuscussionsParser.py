@@ -234,7 +234,7 @@ def set_game_id(message):
 def game_add(message):
     game_id = Defs.check_game_id(message.text)
     if game_id == -1:
-        bot.send_message(message.message.from_user.id, "Нет такого Steam ID, замена не произведена")
+        bot.send_message(message.from_user.id, "Нет такого Steam ID, замена не произведена")
     else:
         con = sqlite3.connect("users_games.db")
         cursor = con.cursor()
@@ -244,7 +244,7 @@ def game_add(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True,one_time_keyboard=True)
         item1=types.KeyboardButton("В начало")
         markup.add(item1)
-        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_id_name.get(int(game_id),game_id)}",reply_markup=markup)
+        bot.send_message(message.from_user.id, f"Замена произведена, новая игра {games_id_name.get(game_id,game_id)}",reply_markup=markup)
 
 def game_list(message):
     if message.text=="Выбрать игру из списка":
