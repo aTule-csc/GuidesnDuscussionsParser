@@ -44,11 +44,11 @@ def get_key_words(message):
         return_value.append(i[1])
     return return_value
 
-def get_game_name_steam(game_id):
-    html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/").text
-    soup = BeautifulSoup(html, 'html.parser')
-    hs = soup.find("div", class_ = "apphub_AppName_ellipsis_es_highlight_checked").text
-    return hs
+# def get_game_name_steam(game_id):
+#     html = requests.get(f"https://steamcommunity.com/app/{game_id}/discussions/").text
+#     soup = BeautifulSoup(html, 'html.parser')
+#     hs = soup.find("div", class_ = "apphub_AppName_ellipsis_es_highlight_checked").text
+#     return hs
 # "<h1>You have been banned on SteamDB</h1>" Damn :/
 # def get_game_name_steamdb(message):
 #     game_id = get_game_id(message)
